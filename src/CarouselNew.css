@@ -1,0 +1,15 @@
+.video-clip-container {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.video-clip-container  input {
+    float: right;
+    margin: 10px 0px;
+}
+
+.video-clip-container-checkbox {
+    display: flex;
+    justify-content: end;
+}
