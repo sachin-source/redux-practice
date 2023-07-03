@@ -23,18 +23,20 @@ function App() {
   // const [clips, setclips] = useState([]);
   // const [labels, setlabels] = useState([]);
   const [activeCategory, setactiveCategory] = useState('');
-  const [activeLabels, setactiveLabels] = useState([]);
+  // const [activeLabels, setactiveLabels] = useState([]);
   // const [activeClips, setactiveClips] = useState([]);
   const [isVideoPlaying, setisVideoPlaying] = useState(false)
 
   const [expanded, setExpanded] = useState('');
-  const [activeLabelNames, setactiveLabelNames] = useState([])
+  // const [activeLabelNames, setactiveLabelNames] = useState([])
 
   const allLabels = useSelector((state) => state.allLabels);
   const allClips = useSelector((state) => state.allClips);
   const clips = useSelector((state) => state.clips);
   const labels = useSelector((state) => state.labels);
   const activeClips = useSelector((state) => state.activeClips);
+  const activeLabels = useSelector((state) => state.activeLabels);
+  const activeLabelNames = useSelector((state) => state.activeLabelNames);
   const dispatch = useDispatch()
 
   const Accordion = styled((props) => (
@@ -168,17 +170,22 @@ function App() {
     if (activeLabelNamesList.includes(label)) {
       const labelIndex = activeLabelsList.findIndex(l => l.label == label)
       activeLabelsList.splice(labelIndex, 1)
-      setactiveLabels(activeLabelsList)
+      // setactiveLabels(activeLabelsList)
+      dispatch(actions.addActiveLabels(activeLabelsList))
 
       const labelNameIndex = activeLabelNamesList.findIndex(l => l == label)
       activeLabelNamesList.splice(labelNameIndex, 1)
-      setactiveLabelNames(activeLabelNamesList)
+      // setactiveLabelNames(activeLabelNamesList)
+      dispatch(actions.addActiveLabelNames(activeLabelNamesList))
 
     } else {
       activeLabelNamesList.push(label)
       activeLabelsList.push(allLabels.filter(l => l.label == label)[0])
-      setactiveLabelNames(activeLabelNamesList)
-      setactiveLabels(activeLabelsList)
+      // setactiveLabelNames(activeLabelNamesList)
+      
+      dispatch(actions.addActiveLabelNames(activeLabelNamesList))
+      // setactiveLabels(activeLabelsList)
+      dispatch(actions.addActiveLabels(activeLabelsList))
     }
   }
 
