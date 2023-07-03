@@ -11,20 +11,31 @@ import MuiAccordion from '@mui/material/Accordion';
 import MuiAccordionSummary from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
+import { useSelector, useDispatch } from 'react-redux';
+import { actions } from './store';
+
+
 
 function App() {
 
-  const [allClips, setallClips] = useState([]);
-  const [allLabels, setallLabels] = useState([]);
-  const [clips, setclips] = useState([]);
-  const [labels, setlabels] = useState([]);
+  // const [allClips, setallClips] = useState([]);
+  // const [allLabels, setallLabels] = useState([]);
+  // const [clips, setclips] = useState([]);
+  // const [labels, setlabels] = useState([]);
   const [activeCategory, setactiveCategory] = useState('');
   const [activeLabels, setactiveLabels] = useState([]);
-  const [activeClips, setactiveClips] = useState([]);
+  // const [activeClips, setactiveClips] = useState([]);
   const [isVideoPlaying, setisVideoPlaying] = useState(false)
 
   const [expanded, setExpanded] = useState('');
   const [activeLabelNames, setactiveLabelNames] = useState([])
+
+  const allLabels = useSelector((state) => state.allLabels);
+  const allClips = useSelector((state) => state.allClips);
+  const clips = useSelector((state) => state.clips);
+  const labels = useSelector((state) => state.labels);
+  const activeClips = useSelector((state) => state.activeClips);
+  const dispatch = useDispatch()
 
   const Accordion = styled((props) => (
     <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -115,26 +126,33 @@ function App() {
 
   const getAllLabelsAndClips = () => {
     fetch(`http://localhost:3000/label/`).then(response => response.json()).then(labelsArr => {
-      setallLabels(labelsArr)
-
+      // setallLabels(labelsArr)
+      dispatch(actions.addAllLabels(labelsArr))
+      
     });
     fetch(`http://localhost:3000/clip`).then(response => response.json()).then(labelledClips => {
-      setallClips(labelledClips)
-      setclips(labelledClips)
+      // setallClips(labelledClips)
+      // setclips(labelledClips)
+      dispatch(actions.addAllClips(labelledClips))
+      dispatch(actions.addClips(labelledClips))
     });
   }
-
+  
   const getLabels = (e) => {
     const category = e.target.innerHTML.toLowerCase().trim()
     const categoryIndex = filters.findIndex(c => c.trim().toLowerCase() == category);
     setExpanded('panel' + categoryIndex)
-
+    
     const activeLabelsArr = allLabels.filter(l => l.category == category);
-    setlabels(activeLabelsArr);
-    getClips(activeLabelsArr);
+    // setlabels(activeLabelsArr);
+    // getClips(activeLabelsArr);
+    dispatch(actions.addLabels(activeLabelsArr))
+    // dispatch(actions.addLa(activeLabelsArr))
     setactiveCategory(category);
     const activeLabelNamesArr = activeLabelsArr.map(l => l.label);
-    setactiveClips(allClips.filter(c => activeLabelNamesArr.includes(c.label)).map(c => c.id));
+    const activeClipsArr = allClips.filter(c => activeLabelNamesArr.includes(c.label)).map(c => c.id);
+    // setactiveClips(activeClipsArr);
+    dispatch(actions.addActiveClips(activeClipsArr))
   }
 
   const getClips = (activeLabelsArr) => {
