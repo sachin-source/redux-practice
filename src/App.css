@@ -38,13 +38,22 @@ video::-webkit-slider-thumb {
   display: flex;
   flex-direction: column;
   margin: 10px;
+  justify-content: flex-end;
+}
+
+.filter select {
+  padding: 8px;
+  font-size: 18px;
+  background-color: #f7f7f7;
+    color: rgba(0, 0, 0, 0.87);
+    border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 .submit {
   color: white;
   background-color: green;
   padding: 10px;
-  margin: 10px;
+  margin: 10px 10px 1px 0px;
   border-radius: 8px;
 }
 

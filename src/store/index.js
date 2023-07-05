@@ -25,28 +25,56 @@ import { configureStore, createSlice } from "@reduxjs/toolkit";
 
 const assetsSlice = createSlice({
     name : 'assets', 
-    initialState : { allLabels : [], allClips : [], labels : [], clips : [], activeLabels : [], activeClips : [], activeLabelNames : [] },
+    initialState : { categories : [], products : [], videos : [], allLabels : [], allClips : [], labels : [], clips : [], activeLabels : [], activeClips : [], activeLabelNames : [], activeLabelIds : [] },
     reducers : {
+        addCategories (state, action) {
+            console.log(action.payload)
+            state.categories = [...action.payload]
+        },
+        addProducts (state, action) {
+            console.log(action.payload)
+            state.products = [...action.payload]
+        },
+        addEpisodes (state, action) {
+            console.log(action.payload)
+            state.episodes = [...action.payload]
+        },
+        addVideos (state, action) {
+            console.log(action.payload)
+            state.videos = [...action.payload]
+        },
         addAllLabels (state, action) {
-            state.allLabels = [...state.allLabels, ...action.payload]
+            console.log('labels added', JSON.stringify(action.payload))
+            state.allLabels = [...action.payload]
+            // state.allLabels = [...state.allLabels, ...action.payload]
         },
         addAllClips (state, action) {
-            state.allClips = [...state.allClips, ...action.payload]
+            console.log('clips added', JSON.stringify(action.payload))
+            state.allClips = [...action.payload]
+            // state.allClips = [...state.allClips, ...action.payload]
         },
         addLabels (state, action) {
-            state.labels = [...state.labels, ...action.payload]
+            state.labels = [...action.payload]
+            // state.labels = [...state.labels, ...action.payload]
         },
         addClips (state, action) {
-            state.clips = [...state.clips, ...action.payload]
+            state.clips = [...action.payload]
+            // state.clips = [...state.clips, ...action.payload]
         },
         addActiveLabels (state, action) {
-            state.activeLabels = [...state.activeLabels, ...action.payload]
+            state.activeLabels = [...action.payload]
+            // state.activeLabels = [...state.activeLabels, ...action.payload]
         },
         addActiveClips (state, action) {
-            state.activeClips = [...state.activeClips, ...action.payload]
+            state.activeClips = [ ...action.payload]
+            // state.activeClips = [...state.activeClips, ...action.payload]
         },
         addActiveLabelNames (state, action) {
-            state.activeLabelNames = [...state.activeLabelNames, ...action.payload]
+            state.activeLabelNames = [...action.payload]
+            // state.activeLabelNames = [...state.activeLabelNames, ...action.payload]
+        },
+        addActiveLabelIds (state, action) {
+            state.activeLabelIds = [...action.payload]
         }
     }
 })

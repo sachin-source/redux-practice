@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import CarouselContainer from './CarouselNew';
+import CarouselContainer from './components/CarouselNew';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 
@@ -29,6 +29,10 @@ function App() {
 
   const [expanded, setExpanded] = useState('');
   // const [activeLabelNames, setactiveLabelNames] = useState([])
+  const [activeCategoryFilter, setactiveCategoryFilter] = useState('');
+  const [activeProductFilter, setactiveProductFilter] = useState('');
+  const [activeEpisodeFilter, setactiveEpisodeFilter] = useState('');
+  const [activeVideoFilter, setactiveVideoFilter] = useState({});
 
   const allLabels = useSelector((state) => state.allLabels);
   const allClips = useSelector((state) => state.allClips);
@@ -37,7 +41,34 @@ function App() {
   const activeClips = useSelector((state) => state.activeClips);
   const activeLabels = useSelector((state) => state.activeLabels);
   const activeLabelNames = useSelector((state) => state.activeLabelNames);
+  const activeLabelIds = useSelector((state) => state.activeLabelIds);
+  const filter_categories = useSelector((state) => state.categories);
+  const filter_products = useSelector((state) => state.products);
+  const filter_episodes = useSelector((state) => state.episodes);
+  const filter_videos = useSelector((state) => state.videos);
   const dispatch = useDispatch()
+
+  useEffect(() => {
+  }, [activeEpisodeFilter])
+  
+  const onFiltersSubmit = () => {
+    
+    const activeVideo = activeEpisodeFilter ? filter_videos.find(v => v.episodeId == activeEpisodeFilter) : {};
+    setactiveVideoFilter(activeVideo)
+    document.getElementById('video-source').setAttribute("src", "./" + activeVideo.src )
+    // document.getElementById('video').setAttribute("key", "./" + activeVideo.src)
+  
+    activeVideo?._id && fetch(`http://localhost:3006/label/?videoId=${activeVideo?._id}`).then(response => response.json()).then(({ err, labels}) => {
+      // setallLabels(labelsArr)
+      dispatch(actions.addAllLabels(labels))
+    });
+    activeVideo?._id && fetch(`http://localhost:3006/clip/?videoId=${activeVideo?._id}`).then(response => response.json()).then(({err, clips}) => {
+      // setallClips(clips)
+      // setclips(clips)
+      dispatch(actions.addAllClips(clips))
+      dispatch(actions.addClips(clips))
+    });
+  }
 
   const Accordion = styled((props) => (
     <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -75,7 +106,6 @@ function App() {
     borderTop: '1px solid rgba(0, 0, 0, .125)',
   }));
 
-
   const handleChange = (panel) => (newExpanded) => {
     setExpanded(newExpanded ? (expanded == panel ? '' : panel) : false);
   };
@@ -94,7 +124,7 @@ function App() {
   }
 
   useEffect(() => {
-    console.log(activeClips)
+    // console.log(activeClips)
   }, [activeClips]);
 
   const playPouse = () => {
@@ -123,16 +153,32 @@ function App() {
       const percent = Math.min(Math.max(0, e.x - totalTimelineWidth.x), totalTimelineWidth.width) / totalTimelineWidth.width;
       video.currentTime = (video.duration * percent);
     })
-    getAllLabelsAndClips()
+    getInitialSelectionValues()
   }, [])
 
-  const getAllLabelsAndClips = () => {
-    fetch(`http://localhost:3000/label/`).then(response => response.json()).then(labelsArr => {
+  const getInitialSelectionValues = () => {
+
+    fetch(`http://localhost:3006/category`).then(response => response.json()).then(({err, categories}) => {
+      dispatch(actions.addCategories(categories))
+      fetch(`http://localhost:3006/product`).then(response => response.json()).then(({err, products}) => {
+        dispatch(actions.addProducts(products))
+        fetch(`http://localhost:3006/episode`).then(response => response.json()).then(({err, episodes}) => {
+          dispatch(actions.addEpisodes(episodes))
+          fetch(`http://localhost:3006/video`).then(response => response.json()).then(({err, videos}) => {
+            dispatch(actions.addVideos(videos))
+          });
+        });
+      });
+    });
+  }
+
+  const onVideoSelect = () => {
+    fetch(`http://localhost:3006/label/`).then(response => response.json()).then(labelsArr => {
       // setallLabels(labelsArr)
       dispatch(actions.addAllLabels(labelsArr))
       
     });
-    fetch(`http://localhost:3000/clip`).then(response => response.json()).then(labelledClips => {
+    fetch(`http://localhost:3006/clip`).then(response => response.json()).then(labelledClips => {
       // setallClips(labelledClips)
       // setclips(labelledClips)
       dispatch(actions.addAllClips(labelledClips))
@@ -143,7 +189,7 @@ function App() {
   const getLabels = (e) => {
     const category = e.target.innerHTML.toLowerCase().trim()
     const categoryIndex = filters.findIndex(c => c.trim().toLowerCase() == category);
-    setExpanded('panel' + categoryIndex)
+    expanded != ('panel' + categoryIndex) && setExpanded('panel' + categoryIndex)
     
     const activeLabelsArr = allLabels.filter(l => l.category == category);
     // setlabels(activeLabelsArr);
@@ -151,8 +197,8 @@ function App() {
     dispatch(actions.addLabels(activeLabelsArr))
     // dispatch(actions.addLa(activeLabelsArr))
     setactiveCategory(category);
-    const activeLabelNamesArr = activeLabelsArr.map(l => l.label);
-    const activeClipsArr = allClips.filter(c => activeLabelNamesArr.includes(c.label)).map(c => c.id);
+    const activeLabelIdArr = activeLabelsArr.map(l => l._id.toString())
+    const activeClipsArr = allClips.filter(c => activeLabelIdArr.includes(c.labelId)).map(c => c._id.toString());
     // setactiveClips(activeClipsArr);
     dispatch(actions.addActiveClips(activeClipsArr))
   }
@@ -197,53 +243,74 @@ function App() {
         <div className='filter-container'>
           <div className='filter'>
             <span >Category</span>
-            <select>
-              <option>category</option>
+            <select value={'Select'} onChange={(e) => setactiveCategoryFilter(e.target.value)} >
+              {/* <option value={'category'} >category</option>
               <option>category1</option>
               <option>category2</option>
-              <option>category3</option>
+              <option>category3</option> */}
+                <option selected disabled>Select</option>
+              {
+                filter_categories.map((c) => (
+                  <option value={c?._id} > {c.name} </option>
+                ))
+              }
             </select>
           </div>
           <div className='filter'>
             <span >Product</span>
-            <select>
-              <option>product</option>
+            <select value={'Select'} onChange={(e) => setactiveProductFilter(e.target.value)} >
+              {/* <option>product</option>
               <option>product1</option>
               <option>product2</option>
-              <option>product3</option>
+              <option>product3</option> */}
+              <option selected disabled>Select</option>
+              {
+                filter_products?.filter(p => p.categoryId == activeCategoryFilter).map(p => (
+                  <option value={p?._id} >{p.name}</option>
+                ))
+              }
             </select>
           </div>
           <div className='filter'>
             <span >Episode</span>
-            <select>
-              <option>episode</option>
+            <select value={'Select'} onChange={(e) => setactiveEpisodeFilter(e.target.value)} >
+              {/* <option>episode</option>
               <option>episode1</option>
               <option>episode2</option>
-              <option>episode3</option>
+              <option>episode3</option> */}
+              <option selected disabled>Select</option>
+              {
+                filter_episodes?.filter(e => e.productId == activeProductFilter).map(e => (
+                  <option value={e?._id} >{e.name}</option>
+                ))
+              }
             </select>
           </div>
-          <div className='filter submit'>
-            <span>Submit</span>
+          <div className='filter'>
+            <span className='submit' onClick={onFiltersSubmit} >Submit</span>
           </div>
         </div>
         <div className='video-container'>
-          <video id='video' width="100%" >
-            <source src="videoplayback.mp4" type="video/mp4" />
+          <video id='video' key={activeVideoFilter?.src} width="100%" >
+            <source id='video-source' src={activeVideoFilter?.src} type="video/mp4" />
           </video>
+          {/* <video id='video' key={ './' + activeVideoFilter?.src } width="100%" >
+            <source id='video-source' src={ './' + activeVideoFilter?.src } type="video/mp4" />
+          </video> */}
           <button type="button" id="playVideo" onClick={playPouse}> {isVideoPlaying ? <PauseIcon /> : <PlayArrowIcon />} </button>
         </div>
         <div id='video-timeline-container' className='video-timeline-container'>
           <div className="inner" id='video-timeline' >
             {
-              clips.map((c, i) => (
-                <span key={i} style={getLineMarkerPoint(c.timestamp)} className={activeClips.includes(c.id) ? (activeLabelNames.includes(c.label) ? 'active' : 'in-active') : ''}></span>
+              clips?.map((c, i) => (
+                <span key={i} style={getLineMarkerPoint(c.timestamp)} className={activeClips.includes(c._id) ? (activeLabelNames.includes(labels.find(l => l._id.toString() == c.labelId)?.label) ? 'active' : 'in-active') : ''}></span>
               ))
             }
           </div>
         </div>
         <div className='video-filters-container'>
           {
-            filters.map((category, i) => (
+            filters?.map((category, i) => (
               <span key={i} onClick={getLabels} className={activeCategory == category.trim().toLowerCase() ? 'active' : ''} > {category} </span>
             ))
           }
@@ -255,7 +322,7 @@ function App() {
             </div>
             <div className='labels-container' >
               {
-                labels.map((label, i) => <span key={i} onClick={onLabelChange} className={activeLabelNames.includes(label?.label?.trim().toLowerCase()) ? 'active' : ''} >{label.label}</span>)
+                labels?.map((label, i) => <span key={i} onClick={onLabelChange} className={activeLabelNames.includes(label?.label?.trim().toLowerCase()) ? 'active' : ''} >{label.label}</span>)
               }
             </div>
           </div>) : (<></>)
@@ -272,28 +339,33 @@ function App() {
 
               {
                 filters.map((f, i) => (
-                  <Accordion expanded={expanded === 'panel' + i} onChange={handleChange('panel' + i)}>
+                  <Accordion key={i} expanded={expanded === 'panel' + i} onChange={handleChange('panel' + i)}>
                     <AccordionSummary aria-controls={"panel" + i + "d-content"} id={"panel" + i + "d-header"}>
                       <Typography>{f}</Typography>
                     </AccordionSummary>
-
-                    {
-                      (expanded === 'panel' + i) ? (<AccordionDetails>
-
+                    
+                    <AccordionDetails>
                         <div className='accordion-body'>
                           {
-                            allLabels.filter(l => l.category == f.trim().toLowerCase()).length ? allLabels.filter(l => l.category == f.trim().toLowerCase()).map(l => (
+                            allLabels?.filter(l => l.category == f.trim().toLowerCase()).length ? allLabels.filter(l => l.category == f.trim().toLowerCase()).map(l => (
                               <div className='carousel-container' >
                                 <span className='carousel-head' >{l.label}</span>
-                                <CarouselContainer clips={allClips.filter(c => c.label == l.label)} src={"videoplayback.mp4"} playTimeLine={playTimeLine} />
+                                <CarouselContainer clips={allClips.filter(c => c.labelId == l._id.toString())} label={l.label} labelId={l._id.toString()} src={"videoplayback.mp4"} playTimeLine={playTimeLine} />
                               </div>
                             )) : (
                               <div className='clip-placeholder' >No labels and/or clips available</div>
                             )
+                            // allLabels.filter(l => l.category == f.trim().toLowerCase()).length ? allLabels.filter(l => l.category == f.trim().toLowerCase()).map(l => (
+                            //   <div className='carousel-container' >
+                            //     <span className='carousel-head' >{l.label}</span>
+                            //     <CarouselContainer clips={allClips.filter(c => c.label == l.label)} src={"videoplayback.mp4"} playTimeLine={playTimeLine} />
+                            //   </div>
+                            // )) : (
+                            //   <div className='clip-placeholder' >No labels and/or clips available</div>
+                            // )
                           }
                         </div>
-                      </AccordionDetails>) : (<></>)
-                    }
+                      </AccordionDetails>
                     
                   </Accordion>
                 ))
