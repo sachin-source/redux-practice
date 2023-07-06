@@ -17,18 +17,9 @@ import { actions } from './store';
 
 
 function App() {
-
-  // const [allClips, setallClips] = useState([]);
-  // const [allLabels, setallLabels] = useState([]);
-  // const [clips, setclips] = useState([]);
-  // const [labels, setlabels] = useState([]);
   const [activeCategory, setactiveCategory] = useState('');
-  // const [activeLabels, setactiveLabels] = useState([]);
-  // const [activeClips, setactiveClips] = useState([]);
-  const [isVideoPlaying, setisVideoPlaying] = useState(false)
-
+  const [isVideoPlaying, setisVideoPlaying] = useState(false);
   const [expanded, setExpanded] = useState('');
-  // const [activeLabelNames, setactiveLabelNames] = useState([])
   const [activeCategoryFilter, setactiveCategoryFilter] = useState('');
   const [activeProductFilter, setactiveProductFilter] = useState('');
   const [activeEpisodeFilter, setactiveEpisodeFilter] = useState('');
@@ -49,25 +40,15 @@ function App() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-  }, [activeEpisodeFilter])
-  
+    setVideoProtocols();
+    const video = document.getElementById('video');
+    video.onloadedmetadata = setVideoProtocols;
+  }, [activeVideoFilter])
+
   const onFiltersSubmit = () => {
-    
     const activeVideo = activeEpisodeFilter ? filter_videos.find(v => v.episodeId == activeEpisodeFilter) : {};
     setactiveVideoFilter(activeVideo)
-    document.getElementById('video-source').setAttribute("src", "./" + activeVideo.src )
-    // document.getElementById('video').setAttribute("key", "./" + activeVideo.src)
-  
-    activeVideo?._id && fetch(`http://localhost:3006/label/?videoId=${activeVideo?._id}`).then(response => response.json()).then(({ err, labels}) => {
-      // setallLabels(labelsArr)
-      dispatch(actions.addAllLabels(labels))
-    });
-    activeVideo?._id && fetch(`http://localhost:3006/clip/?videoId=${activeVideo?._id}`).then(response => response.json()).then(({err, clips}) => {
-      // setallClips(clips)
-      // setclips(clips)
-      dispatch(actions.addAllClips(clips))
-      dispatch(actions.addClips(clips))
-    });
+    document.getElementById('video-source').setAttribute("src", activeVideo.src)
   }
 
   const Accordion = styled((props) => (
@@ -140,10 +121,10 @@ function App() {
     return { left: `${markerpoint}%`, width: `${3}px` }
   }
 
-  useEffect(() => {
+  const setVideoProtocols = () => {
     const video = document.getElementById('video');
-    // getAllLabels()
     video.addEventListener("timeupdate", (ee) => {
+      console.log({ ee })
       let currentPercent = (video.currentTime / video.duration) * 100;
       const backgroundCSS = `linear-gradient(to right, #000 ${currentPercent}%, #ccc ${currentPercent}%)`
       document.querySelector('.inner').style.background = backgroundCSS;
@@ -153,18 +134,32 @@ function App() {
       const percent = Math.min(Math.max(0, e.x - totalTimelineWidth.x), totalTimelineWidth.width) / totalTimelineWidth.width;
       video.currentTime = (video.duration * percent);
     })
+
+    activeVideoFilter?._id && fetch(`http://localhost:3006/label/?videoId=${activeVideoFilter?._id}`).then(response => response.json()).then(({ err, labels }) => {
+      dispatch(actions.addAllLabels(labels))
+    });
+    activeVideoFilter?._id && fetch(`http://localhost:3006/clip/?videoId=${activeVideoFilter?._id}`).then(response => response.json()).then(({ err, clips }) => {
+      dispatch(actions.addAllClips(clips))
+      dispatch(actions.addClips(clips))
+    });
+  }
+
+  useEffect(() => {
+    // setVideoProtocols();
+    // const video = document.getElementById('video');
+    // video.onloadedmetadata = setVideoProtocols;
     getInitialSelectionValues()
   }, [])
 
   const getInitialSelectionValues = () => {
 
-    fetch(`http://localhost:3006/category`).then(response => response.json()).then(({err, categories}) => {
+    fetch(`http://localhost:3006/category`).then(response => response.json()).then(({ err, categories }) => {
       dispatch(actions.addCategories(categories))
-      fetch(`http://localhost:3006/product`).then(response => response.json()).then(({err, products}) => {
+      fetch(`http://localhost:3006/product`).then(response => response.json()).then(({ err, products }) => {
         dispatch(actions.addProducts(products))
-        fetch(`http://localhost:3006/episode`).then(response => response.json()).then(({err, episodes}) => {
+        fetch(`http://localhost:3006/episode`).then(response => response.json()).then(({ err, episodes }) => {
           dispatch(actions.addEpisodes(episodes))
-          fetch(`http://localhost:3006/video`).then(response => response.json()).then(({err, videos}) => {
+          fetch(`http://localhost:3006/video`).then(response => response.json()).then(({ err, videos }) => {
             dispatch(actions.addVideos(videos))
           });
         });
@@ -174,23 +169,20 @@ function App() {
 
   const onVideoSelect = () => {
     fetch(`http://localhost:3006/label/`).then(response => response.json()).then(labelsArr => {
-      // setallLabels(labelsArr)
       dispatch(actions.addAllLabels(labelsArr))
-      
+
     });
     fetch(`http://localhost:3006/clip`).then(response => response.json()).then(labelledClips => {
-      // setallClips(labelledClips)
-      // setclips(labelledClips)
       dispatch(actions.addAllClips(labelledClips))
       dispatch(actions.addClips(labelledClips))
     });
   }
-  
+
   const getLabels = (e) => {
     const category = e.target.innerHTML.toLowerCase().trim()
     const categoryIndex = filters.findIndex(c => c.trim().toLowerCase() == category);
     expanded != ('panel' + categoryIndex) && setExpanded('panel' + categoryIndex)
-    
+
     const activeLabelsArr = allLabels.filter(l => l.category == category);
     // setlabels(activeLabelsArr);
     // getClips(activeLabelsArr);
@@ -228,7 +220,7 @@ function App() {
       activeLabelNamesList.push(label)
       activeLabelsList.push(allLabels.filter(l => l.label == label)[0])
       // setactiveLabelNames(activeLabelNamesList)
-      
+
       dispatch(actions.addActiveLabelNames(activeLabelNamesList))
       // setactiveLabels(activeLabelsList)
       dispatch(actions.addActiveLabels(activeLabelsList))
@@ -241,14 +233,14 @@ function App() {
     <div className='page-container'>
       <div className='video-section-container'>
         <div className='filter-container'>
-          <div className='filter'>
+          <div className='filter' data-testid="category-dropdown" >
             <span >Category</span>
-            <select value={'Select'} onChange={(e) => setactiveCategoryFilter(e.target.value)} >
+            <select defaultValue={'Select'} onChange={(e) => setactiveCategoryFilter(e.target.value)} >
               {/* <option value={'category'} >category</option>
               <option>category1</option>
               <option>category2</option>
               <option>category3</option> */}
-                <option selected disabled>Select</option>
+              <option disabled>Select</option>
               {
                 filter_categories.map((c) => (
                   <option value={c?._id} > {c.name} </option>
@@ -256,14 +248,14 @@ function App() {
               }
             </select>
           </div>
-          <div className='filter'>
+          <div className='filter' data-testid="product-dropdown" >
             <span >Product</span>
-            <select value={'Select'} onChange={(e) => setactiveProductFilter(e.target.value)} >
+            <select defaultValue={'Select'} onChange={(e) => setactiveProductFilter(e.target.value)} >
               {/* <option>product</option>
               <option>product1</option>
               <option>product2</option>
               <option>product3</option> */}
-              <option selected disabled>Select</option>
+              <option disabled>Select</option>
               {
                 filter_products?.filter(p => p.categoryId == activeCategoryFilter).map(p => (
                   <option value={p?._id} >{p.name}</option>
@@ -271,14 +263,14 @@ function App() {
               }
             </select>
           </div>
-          <div className='filter'>
+          <div className='filter' data-testid="episode-dropdown">
             <span >Episode</span>
-            <select value={'Select'} onChange={(e) => setactiveEpisodeFilter(e.target.value)} >
+            <select defaultValue={'Select'} onChange={(e) => setactiveEpisodeFilter(e.target.value)} >
               {/* <option>episode</option>
               <option>episode1</option>
               <option>episode2</option>
               <option>episode3</option> */}
-              <option selected disabled>Select</option>
+              <option disabled>Select</option>
               {
                 filter_episodes?.filter(e => e.productId == activeProductFilter).map(e => (
                   <option value={e?._id} >{e.name}</option>
@@ -291,7 +283,7 @@ function App() {
           </div>
         </div>
         <div className='video-container'>
-          <video id='video' key={activeVideoFilter?.src} width="100%" >
+          <video data-testid="video" id='video' key={activeVideoFilter?.src} width="100%" >
             <source id='video-source' src={activeVideoFilter?.src} type="video/mp4" />
           </video>
           {/* <video id='video' key={ './' + activeVideoFilter?.src } width="100%" >
@@ -300,7 +292,7 @@ function App() {
           <button type="button" id="playVideo" onClick={playPouse}> {isVideoPlaying ? <PauseIcon /> : <PlayArrowIcon />} </button>
         </div>
         <div id='video-timeline-container' className='video-timeline-container'>
-          <div className="inner" id='video-timeline' >
+          <div data-testid="video-timeline" className="inner" id='video-timeline' >
             {
               clips?.map((c, i) => (
                 <span key={i} style={getLineMarkerPoint(c.timestamp)} className={activeClips.includes(c._id) ? (activeLabelNames.includes(labels.find(l => l._id.toString() == c.labelId)?.label) ? 'active' : 'in-active') : ''}></span>
@@ -311,7 +303,7 @@ function App() {
         <div className='video-filters-container'>
           {
             filters?.map((category, i) => (
-              <span key={i} onClick={getLabels} className={activeCategory == category.trim().toLowerCase() ? 'active' : ''} > {category} </span>
+              <span data-testid={"filter-" + i} key={i} onClick={getLabels} className={activeCategory == category.trim().toLowerCase() ? 'active' : ''} > {category} </span>
             ))
           }
         </div>
@@ -330,7 +322,7 @@ function App() {
       </div>
       <div className='clip-section-container'>
         <div className='clip-section-headings'>
-          <span className='active'>Insights Category</span>
+          <span data-testid="insightsCategory" className='active'>Insights Category</span>
           <span>+ To Ad Inventory</span>
         </div>
         <div className='filter-wise-section-container'>
@@ -339,87 +331,31 @@ function App() {
 
               {
                 filters.map((f, i) => (
-                  <Accordion key={i} expanded={expanded === 'panel' + i} onChange={handleChange('panel' + i)}>
+                  <Accordion data-testid={"accordian-" + i} key={i} expanded={expanded === 'panel' + i} onChange={handleChange('panel' + i)}>
                     <AccordionSummary aria-controls={"panel" + i + "d-content"} id={"panel" + i + "d-header"}>
-                      <Typography>{f}</Typography>
+                      <Typography data-testid={"accordian-title-" + i} >{f}</Typography>
                     </AccordionSummary>
-                    
+
                     <AccordionDetails>
-                        <div className='accordion-body'>
-                          {
-                            allLabels?.filter(l => l.category == f.trim().toLowerCase()).length ? allLabels.filter(l => l.category == f.trim().toLowerCase()).map(l => (
-                              <div className='carousel-container' >
-                                <span className='carousel-head' >{l.label}</span>
-                                <CarouselContainer clips={allClips.filter(c => c.labelId == l._id.toString())} label={l.label} labelId={l._id.toString()} src={"videoplayback.mp4"} playTimeLine={playTimeLine} />
-                              </div>
-                            )) : (
-                              <div className='clip-placeholder' >No labels and/or clips available</div>
-                            )
-                            // allLabels.filter(l => l.category == f.trim().toLowerCase()).length ? allLabels.filter(l => l.category == f.trim().toLowerCase()).map(l => (
-                            //   <div className='carousel-container' >
-                            //     <span className='carousel-head' >{l.label}</span>
-                            //     <CarouselContainer clips={allClips.filter(c => c.label == l.label)} src={"videoplayback.mp4"} playTimeLine={playTimeLine} />
-                            //   </div>
-                            // )) : (
-                            //   <div className='clip-placeholder' >No labels and/or clips available</div>
-                            // )
-                          }
-                        </div>
-                      </AccordionDetails>
-                    
+                      <div className='accordion-body'>
+                        {
+                          allLabels?.filter(l => l.category == f.trim().toLowerCase()).length ? allLabels.filter(l => l.category == f.trim().toLowerCase()).map((l, j) => (
+                            <div className='carousel-container' >
+                              <span className='carousel-head' >{l.label}</span>
+                              <CarouselContainer index={i + "-" + j} clips={allClips.filter(c => c.labelId == l._id.toString())} label={l.label} labelId={l._id.toString()} src={"videoplayback.mp4"} playTimeLine={playTimeLine} />
+                            </div>
+                          )) : (
+                            <div data-testid={"accordian-body-" + i} className='clip-placeholder' >No labels and/or clips available</div>
+                          )
+                        }
+                      </div>
+                    </AccordionDetails>
+
                   </Accordion>
                 ))
               }
             </div>
-
-            {/* } */}
           </div>
-          {/* <div className='filter-wise-section' >
-            <span className='heading'>Emotion</span>
-            <div className='filter-section-container'>
-              <div className='filter-section'>
-                <span className='filter-section-title'>asdfasdf</span>
-                <div className='filter-section-list'>
-                  <span className='filter-clip-placeholder'></span>
-                </div>
-              </div>
-              <div className='filter-section'>
-                <span className='filter-section-title'>solution</span>
-                <div className='filter-section-list'>
-                  <span className='filter-clip-placeholder'></span>
-                </div>
-              </div>
-              <div className='filter-section'>
-                <span className='filter-section-title'>mustache</span>
-                <div className='filter-section-list'>
-                  <span className='filter-clip-placeholder'></span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className='filter-wise-section' >
-            <span className='heading'>Emotion</span>
-            <div className='filter-section-container'>
-              <div className='filter-section'>
-                <span className='filter-section-title'>mustache</span>
-                <div className='filter-section-list'>
-                  <span className='filter-clip-placeholder'></span>
-                </div>
-              </div>
-              <div className='filter-section'>
-                <span className='filter-section-title'>mustache</span>
-                <div className='filter-section-list'>
-                  <span className='filter-clip-placeholder'></span>
-                </div>
-              </div>
-              <div className='filter-section'>
-                <span className='filter-section-title'>mustache</span>
-                <div className='filter-section-list'>
-                  <span className='filter-clip-placeholder'></span>
-                </div>
-              </div>
-            </div>
-          </div> */}
         </div>
       </div>
     </div>

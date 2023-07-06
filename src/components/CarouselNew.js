@@ -21,27 +21,29 @@ const responsive = {
   }
 };
 
-function CarouselContainer({label, labelId, src, playTimeLine}) {
+function CarouselContainer({label, labelId, src, playTimeLine, index}) {
   const clips = useSelector((state) => state.clips);
 
-  return  <Carousel
-  swipeable={true}
-  draggable={true}
-  showDots={false}
-  responsive={responsive}
-  ssr={true}
-  infinite={false}
-  autoPlaySpeed={1000}
-  keyBoardControl={true}
-  customTransition="all .1"
-  transitionDuration={500}
-  containerClass="carousel-container"
-  removeArrowOnDeviceType={["tablet", "mobile"]}
-  dotListClass="custom-dot-list-style"
-  itemClass="carousel-item-padding-40-px"
->
-  { clips.length ? clips.filter(c => c.labelId == labelId).map((item, i) => <Item key={i} i={i} item={item} src={src} playTimeLine={playTimeLine} /> ) : ( <div className="clip-placeholder" >No clips available</div> ) }
-</Carousel>;
+  return <div data-testid={"carousel-" + index} >
+        <Carousel
+      swipeable={true}
+      draggable={true}
+      showDots={false}
+      responsive={responsive}
+      ssr={true}
+      infinite={false}
+      autoPlaySpeed={1000}
+      keyBoardControl={true}
+      customTransition="all .1"
+      transitionDuration={500}
+      containerClass="carousel-container"
+      removeArrowOnDeviceType={["tablet", "mobile"]}
+      dotListClass="custom-dot-list-style"
+      itemClass="carousel-item-padding-40-px"
+    >
+      { clips.length ? clips.filter(c => c.labelId == labelId).map((item, i) => <Item key={i} i={i} item={item} src={src} playTimeLine={playTimeLine} /> ) : ( <div className="clip-placeholder" >No clips available</div> ) }
+    </Carousel>;
+  </div>
 }
 
 function Item({ i, item, src, playTimeLine })
