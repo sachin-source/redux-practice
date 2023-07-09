@@ -14,8 +14,6 @@ import Typography from '@mui/material/Typography';
 import { useSelector, useDispatch } from 'react-redux';
 import { actions } from './store';
 
-
-
 function App() {
   const [activeCategory, setactiveCategory] = useState('');
   const [isVideoPlaying, setisVideoPlaying] = useState(false);
@@ -104,10 +102,6 @@ function App() {
     }, stopVideoAfter)
   }
 
-  useEffect(() => {
-    // console.log(activeClips)
-  }, [activeClips]);
-
   const playPouse = () => {
     const video = document.getElementById('video');
     video.paused ? video.play() : video.pause();
@@ -145,9 +139,6 @@ function App() {
   }
 
   useEffect(() => {
-    // setVideoProtocols();
-    // const video = document.getElementById('video');
-    // video.onloadedmetadata = setVideoProtocols;
     getInitialSelectionValues()
   }, [])
 
@@ -167,37 +158,17 @@ function App() {
     });
   }
 
-  const onVideoSelect = () => {
-    fetch(`http://localhost:3006/label/`).then(response => response.json()).then(labelsArr => {
-      dispatch(actions.addAllLabels(labelsArr))
-
-    });
-    fetch(`http://localhost:3006/clip`).then(response => response.json()).then(labelledClips => {
-      dispatch(actions.addAllClips(labelledClips))
-      dispatch(actions.addClips(labelledClips))
-    });
-  }
-
   const getLabels = (e) => {
     const category = e.target.innerHTML.toLowerCase().trim()
     const categoryIndex = filters.findIndex(c => c.trim().toLowerCase() == category);
     expanded != ('panel' + categoryIndex) && setExpanded('panel' + categoryIndex)
 
     const activeLabelsArr = allLabels.filter(l => l.category == category);
-    // setlabels(activeLabelsArr);
-    // getClips(activeLabelsArr);
     dispatch(actions.addLabels(activeLabelsArr))
-    // dispatch(actions.addLa(activeLabelsArr))
     setactiveCategory(category);
     const activeLabelIdArr = activeLabelsArr.map(l => l._id.toString())
     const activeClipsArr = allClips.filter(c => activeLabelIdArr.includes(c.labelId)).map(c => c._id.toString());
-    // setactiveClips(activeClipsArr);
     dispatch(actions.addActiveClips(activeClipsArr))
-  }
-
-  const getClips = (activeLabelsArr) => {
-    const currentActiveLabels = activeLabelsArr.map(l => l.label);
-    // activeLabelsArr.length ? setclips(allClips.filter(c => currentActiveLabels.includes(c.label))) : setclips([]);
   }
 
   const onLabelChange = (e) => {
@@ -208,21 +179,16 @@ function App() {
     if (activeLabelNamesList.includes(label)) {
       const labelIndex = activeLabelsList.findIndex(l => l.label == label)
       activeLabelsList.splice(labelIndex, 1)
-      // setactiveLabels(activeLabelsList)
       dispatch(actions.addActiveLabels(activeLabelsList))
 
       const labelNameIndex = activeLabelNamesList.findIndex(l => l == label)
       activeLabelNamesList.splice(labelNameIndex, 1)
-      // setactiveLabelNames(activeLabelNamesList)
       dispatch(actions.addActiveLabelNames(activeLabelNamesList))
-
     } else {
       activeLabelNamesList.push(label)
       activeLabelsList.push(allLabels.filter(l => l.label == label)[0])
-      // setactiveLabelNames(activeLabelNamesList)
 
       dispatch(actions.addActiveLabelNames(activeLabelNamesList))
-      // setactiveLabels(activeLabelsList)
       dispatch(actions.addActiveLabels(activeLabelsList))
     }
   }
@@ -236,14 +202,10 @@ function App() {
           <div className='filter' data-testid="category-dropdown" >
             <span >Category</span>
             <select defaultValue={'Select'} onChange={(e) => setactiveCategoryFilter(e.target.value)} >
-              {/* <option value={'category'} >category</option>
-              <option>category1</option>
-              <option>category2</option>
-              <option>category3</option> */}
               <option disabled>Select</option>
               {
-                filter_categories.map((c) => (
-                  <option value={c?._id} > {c.name} </option>
+                filter_categories.map((c, i) => (
+                  <option key={i} value={c?._id} > {c.name} </option>
                 ))
               }
             </select>
@@ -251,14 +213,10 @@ function App() {
           <div className='filter' data-testid="product-dropdown" >
             <span >Product</span>
             <select defaultValue={'Select'} onChange={(e) => setactiveProductFilter(e.target.value)} >
-              {/* <option>product</option>
-              <option>product1</option>
-              <option>product2</option>
-              <option>product3</option> */}
               <option disabled>Select</option>
               {
-                filter_products?.filter(p => p.categoryId == activeCategoryFilter).map(p => (
-                  <option value={p?._id} >{p.name}</option>
+                filter_products?.filter(p => p.categoryId == activeCategoryFilter).map((p, i) => (
+                  <option key={i} value={p?._id} >{p.name}</option>
                 ))
               }
             </select>
@@ -266,14 +224,10 @@ function App() {
           <div className='filter' data-testid="episode-dropdown">
             <span >Episode</span>
             <select defaultValue={'Select'} onChange={(e) => setactiveEpisodeFilter(e.target.value)} >
-              {/* <option>episode</option>
-              <option>episode1</option>
-              <option>episode2</option>
-              <option>episode3</option> */}
               <option disabled>Select</option>
               {
-                filter_episodes?.filter(e => e.productId == activeProductFilter).map(e => (
-                  <option value={e?._id} >{e.name}</option>
+                filter_episodes?.filter(e => e.productId == activeProductFilter).map((e, i) => (
+                  <option value={e?._id} key={i} >{e.name}</option>
                 ))
               }
             </select>
@@ -286,9 +240,6 @@ function App() {
           <video data-testid="video" id='video' key={activeVideoFilter?.src} width="100%" >
             <source id='video-source' src={activeVideoFilter?.src} type="video/mp4" />
           </video>
-          {/* <video id='video' key={ './' + activeVideoFilter?.src } width="100%" >
-            <source id='video-source' src={ './' + activeVideoFilter?.src } type="video/mp4" />
-          </video> */}
           <button type="button" id="playVideo" onClick={playPouse}> {isVideoPlaying ? <PauseIcon /> : <PlayArrowIcon />} </button>
         </div>
         <div id='video-timeline-container' className='video-timeline-container'>

@@ -5,7 +5,7 @@ import store from './store';
 
 afterEach(cleanup);
 
-test('renders learn react link', () => {
+test('Existance of submit buttons', () => {
   render(<Provider store={store} >
     <App />
   </Provider>);
