@@ -3,10 +3,27 @@ import "react-multi-carousel/lib/styles.css";
 import './CarouselNew.css';
 import { useSelector } from "react-redux";
 
+function CustomRightArrow({ onClick }) {
+  function handleClick() {
+    // do whatever you want on the right button click
+    console.log('Right button clicked, go to next slide');
+    // ... and don't forget to call onClick to slide
+    onClick();
+  }
+
+  return (
+    <button
+      onClick={handleClick}
+      aria-label="Go to next slide"
+      className="react-multiple-carousel__arrow react-multiple-carousel__arrow--right"
+    />
+  );
+}
+
 const responsive = {
   desktop: {
     breakpoint: { max: 3000, min: 1024 },
-    items: 3,
+    items: 2,
     // slidesToSlide: 3 // optional, default to 1.
   },
   tablet: {
@@ -24,7 +41,7 @@ const responsive = {
 function CarouselContainer({label, labelId, src, playTimeLine, index}) {
   const clips = useSelector((state) => state.clips);
 
-  return <div data-testid={"carousel-" + index} >
+  return <div data-testid={"carousel-" + index} className="carousel-container" >
         <Carousel
       swipeable={true}
       draggable={true}
@@ -36,13 +53,14 @@ function CarouselContainer({label, labelId, src, playTimeLine, index}) {
       keyBoardControl={true}
       customTransition="all .1"
       transitionDuration={500}
-      containerClass="carousel-container"
+      containerClass="carousel-body"
       removeArrowOnDeviceType={["tablet", "mobile"]}
       dotListClass="custom-dot-list-style"
       itemClass="carousel-item-padding-40-px"
+      customRightArrow={<CustomRightArrow/>}
     >
       { clips.length ? clips.filter(c => c.labelId == labelId).map((item, i) => <Item key={i} i={i} item={item} src={src} playTimeLine={playTimeLine} /> ) : ( <div className="clip-placeholder" >No clips available</div> ) }
-    </Carousel>;
+    </Carousel>
   </div>
 }
 

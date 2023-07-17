@@ -29,7 +29,8 @@ function VideoPlayer({ SERVER_URL }) {
     const filter_videos = useSelector((state) => state.videos);
     const expanded = useSelector((state) => state.expanded);
     const [activeVideoFilter, setactiveVideoFilter] = useState({});
-
+    const dispatch = useDispatch()
+    
     const setVideoProtocols = () => {
         const video = document.getElementById('video');
         video.addEventListener("timeupdate", (ee) => {
@@ -60,7 +61,6 @@ function VideoPlayer({ SERVER_URL }) {
         video.onloadedmetadata = setVideoProtocols;
     }, [activeVideoFilter])
 
-    const dispatch = useDispatch()
     const onFiltersSubmit = () => {
         const activeVideo = activeEpisodeFilter ? filter_videos.find(v => v.episodeId == activeEpisodeFilter) : {};
         setactiveVideoFilter(activeVideo)

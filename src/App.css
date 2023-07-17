@@ -22,11 +22,11 @@ video::-webkit-slider-thumb {
 }
 
 .video-section-container {
-  width: 60vw;
+  /* width: 60vw; */
 }
 
 .clip-section-container {
-  width: 40vw;
+  /* width: 40vw; */
 }
 
 .filter-container {
@@ -76,6 +76,7 @@ video::-webkit-slider-thumb {
   display: flex;
   justify-content: space-between;
   background-color: #595959;
+  overflow-x: auto;
 }
 
 .video-filters-container span {
@@ -83,6 +84,7 @@ video::-webkit-slider-thumb {
   border-radius: 8px;
   background-color: white;
   cursor: pointer;
+  margin: 0 3px;
 }
 
 .video-filters-container span:hover {
@@ -304,4 +306,8 @@ video::-webkit-slider-thumb {
       left: 100%;
       width: 100%;
   }
+}
+
+.carousel-container {
+  width: 90%;
 }

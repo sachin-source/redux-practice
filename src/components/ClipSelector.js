@@ -78,12 +78,10 @@ function ClipSelector() {
     const [start, end] = timestamp.split(',');
     video.currentTime = start;
     video.play();
-    // setisVideoPlaying(true);
     dispatch(actions.setisVideoPlaying(true))
     const stopVideoAfter = (end - start) * 1000;
     setTimeout(() => {
       video.pause()
-      // setisVideoPlaying(false);
       dispatch(actions.setisVideoPlaying(false))
     }, stopVideoAfter)
   }
