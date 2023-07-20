@@ -2,6 +2,25 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import './CarouselNew.css';
 import { useSelector } from "react-redux";
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+
+const ButtonGroup = ({ next, previous, goToSlide, ...rest }) => {
+  const { carouselState: { currentSlide, totalItems } } = rest;
+  const isLeftDisabled = currentSlide === 0
+  const isRightDisabled = currentSlide+2 >= totalItems;
+  console.log({ rest, isLeftDisabled, isRightDisabled })
+  return (
+    <div className="carousel-button-group"  style={{display : 'flex', width : '100%', height : '100%', alignItems : 'center', justifyContent : !(isLeftDisabled || isRightDisabled) ? 'space-between' : ( isLeftDisabled ? 'right' : 'left' ) }} >
+      { !isLeftDisabled ? <KeyboardArrowLeftIcon className="nav-buttons left-button" onClick={() => previous()} /> : <></> }
+      {/* <button className={ 'left-button ' + (isLeftDisabled ? 'button-disabled' : '')} onClick={() => previous()}>&lt;</button> */}
+      { !isRightDisabled ? <KeyboardArrowRightIcon className='nav-buttons right-button' onClick={() => next()} /> : <></>}
+      {/* <button className={ 'right-button ' + (isRightDisabled ? 'button-disabled' : '')} onClick={() => next()} >&gt;</button> */}
+      {/* <button onClick={() => goToSlide(currentSlide + 1)}> Go to any slide </button> */}
+    </div>
+  );
+};
 
 function CustomRightArrow({ onClick }) {
   function handleClick() {
@@ -12,11 +31,16 @@ function CustomRightArrow({ onClick }) {
   }
 
   return (
+    <>
+    {/* <KeyboardArrowRightIcon />
     <button
       onClick={handleClick}
       aria-label="Go to next slide"
       className="react-multiple-carousel__arrow react-multiple-carousel__arrow--right"
     />
+    <NavigateNextIcon  onClick={handleClick} /> */}
+    <button onClick={handleClick}>sdf</button>
+    </>
   );
 }
 
@@ -57,7 +81,10 @@ function CarouselContainer({label, labelId, src, playTimeLine, index}) {
       removeArrowOnDeviceType={["tablet", "mobile"]}
       dotListClass="custom-dot-list-style"
       itemClass="carousel-item-padding-40-px"
-      customRightArrow={<CustomRightArrow/>}
+      // customRightArrow={<CustomRightArrow/>}
+      customButtonGroup={<ButtonGroup />}
+      // renderButtonGroupOutside={true}
+      // partialVisible={true}
     >
       { clips.length ? clips.filter(c => c.labelId == labelId).map((item, i) => <Item key={i} i={i} item={item} src={src} playTimeLine={playTimeLine} /> ) : ( <div className="clip-placeholder" >No clips available</div> ) }
     </Carousel>

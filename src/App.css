@@ -309,5 +309,9 @@ video::-webkit-slider-thumb {
 }
 
 .carousel-container {
-  width: 90%;
+  width: 95%;
+}
+
+.labels-container a {
+  color: black;
 }
