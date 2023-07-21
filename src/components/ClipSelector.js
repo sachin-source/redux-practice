@@ -32,7 +32,6 @@ function ClipSelector() {
 
   const dispatch = useDispatch()
 
-
   const Accordion = styled((props) => (
     <MuiAccordion disableGutters elevation={0} square {...props} />
   ))(({ theme }) => ({
@@ -78,11 +77,11 @@ function ClipSelector() {
     const [start, end] = timestamp.split(',');
     video.currentTime = start;
     video.play();
-    dispatch(actions.setisVideoPlaying(true))
+    dispatch(actions.setisVideoPlaying(1))
     const stopVideoAfter = (end - start) * 1000;
     setTimeout(() => {
       video.pause()
-      dispatch(actions.setisVideoPlaying(false))
+      dispatch(actions.setisVideoPlaying(0))
     }, stopVideoAfter)
   }
 
@@ -119,7 +118,6 @@ function ClipSelector() {
                         }
                       </div>
                     </AccordionDetails>
-
                   </Accordion>
                 ))
               }

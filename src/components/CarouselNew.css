@@ -25,3 +25,7 @@
 .button-disabled {
     display: none;
 }
+
+.react-multi-carousel-track {
+    z-index: 5;
+}
