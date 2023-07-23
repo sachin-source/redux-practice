@@ -315,3 +315,7 @@ video::-webkit-slider-thumb {
 .labels-container a {
   color: black;
 }
+
+.react-multi-carousel-track {
+  z-index: 2;
+}

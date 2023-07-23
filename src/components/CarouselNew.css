@@ -29,3 +29,7 @@
 .react-multi-carousel-track {
     z-index: 5;
 }
+
+.nav-buttons {
+    z-index: 5;
+}
