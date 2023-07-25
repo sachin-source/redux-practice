@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import { useSelector, useDispatch } from 'react-redux';
 import { actions } from '../store';
 
@@ -10,7 +11,7 @@ function VideoPlayer({ SERVER_URL }) {
     const allLabels = useSelector((state) => state.allLabels);
     const allClips = useSelector((state) => state.allClips);
     const [activeCategory, setactiveCategory] = useState('');
-    const [isVideoPlaying, setisVideoPlaying] = useState(false);
+    // const [isVideoPlaying, setisVideoPlaying] = useState(false);
     // const [expanded, setExpanded] = useState('');
     const [activeCategoryFilter, setactiveCategoryFilter] = useState('');
     const [activeProductFilter, setactiveProductFilter] = useState('');
@@ -28,6 +29,12 @@ function VideoPlayer({ SERVER_URL }) {
     const filter_episodes = useSelector((state) => state.episodes);
     const filter_videos = useSelector((state) => state.videos);
     const expanded = useSelector((state) => state.expanded);
+    const isVideoPlaying = useSelector((state) => state.isVideoPlaying);
+    const nextVideo = useSelector((state) => state.nextVideo);
+    const prevVideo = useSelector((state) => state.prevVideo);
+    const currentVideo = useSelector((state) => state.currentVideo);
+    const activeLabelVideos = useSelector((state) => state.activeLabelVideos);
+
     const [activeVideoFilter, setactiveVideoFilter] = useState({});
     const dispatch = useDispatch()
     
@@ -51,8 +58,6 @@ function VideoPlayer({ SERVER_URL }) {
             dispatch(actions.addAllClips(clips))
             dispatch(actions.addClips(clips))
             setisLoadedClips(true)
-            // dispatch(actions.setisLoadedClips(true))
-
         });
     }
     useEffect(() => {
@@ -61,16 +66,55 @@ function VideoPlayer({ SERVER_URL }) {
         video.onloadedmetadata = setVideoProtocols;
     }, [activeVideoFilter])
 
+    useEffect(() => {
+        // console.log(isVideoPlaying)
+    }, [isVideoPlaying])
+
     const onFiltersSubmit = () => {
         const activeVideo = activeEpisodeFilter ? filter_videos.find(v => v.episodeId == activeEpisodeFilter) : {};
         setactiveVideoFilter(activeVideo)
         document.getElementById('video-source').setAttribute("src", activeVideo.src)
     }
 
+    const playTimeLine = (timestamp) => {
+        const video = document.getElementById('video');
+        const [start, end] = timestamp?.split(',');
+        video.currentTime = start;
+        video.play();
+        dispatch(actions.setisVideoPlaying(1))
+        const stopVideoAfter = (end - start) * 1000;
+        setTimeout(() => {
+          video.pause()
+          dispatch(actions.setisVideoPlaying(0))
+        }, stopVideoAfter)
+    }
+
     const playPouse = () => {
         const video = document.getElementById('video');
         video.paused ? video.play() : video.pause();
-        setisVideoPlaying(!video.paused);
+        // setisVideoPlaying(!video.paused);
+    }
+
+    const playNext = () => {
+        const currentVideoIndex = activeLabelVideos.findIndex(v => v?._id == currentVideo._id);
+        const nextVideoJson = activeLabelVideos[currentVideoIndex + 2] || null;
+        const currentVideoJson = activeLabelVideos[currentVideoIndex + 1] || null;
+        const prevVideoJson = activeLabelVideos[currentVideoIndex] || null;
+        dispatch(actions.setCurrentVideo(currentVideoJson));
+        dispatch(actions.setNextVideo(nextVideoJson));
+        dispatch(actions.setPrevVideo(prevVideoJson));
+        playTimeLine(currentVideoJson?.timestamp)
+    }
+
+    const playPrev = () => {
+        const currentVideoIndex = activeLabelVideos.findIndex(v => v?._id == currentVideo._id);
+        const nextVideoJson = activeLabelVideos[currentVideoIndex] || null;
+        const currentVideoJson = activeLabelVideos[currentVideoIndex - 1] || null;
+        const prevVideoJson = activeLabelVideos[currentVideoIndex - 2] || null;
+        dispatch(actions.setCurrentVideo(currentVideoJson));
+        dispatch(actions.setNextVideo(nextVideoJson));
+        dispatch(actions.setPrevVideo(prevVideoJson));
+        playTimeLine(currentVideoJson?.timestamp)
     }
 
     const getLineMarkerPoint = (timestamp) => {
@@ -160,7 +204,13 @@ function VideoPlayer({ SERVER_URL }) {
                 <video data-testid="video" id='video' key={activeVideoFilter?.src} width="100%" >
                     <source id='video-source' src={activeVideoFilter?.src} type="video/mp4" />
                 </video>
-                <button type="button" id="playVideo" onClick={playPouse}> {isVideoPlaying ? <PauseIcon /> : <PlayArrowIcon />} </button>
+                <div className="video-buttons" >
+
+                {/* <button type="button" id="playVideo" onClick={playPouse}> {isVideoPlaying ? <PauseIcon /> : <PlayArrowIcon />} </button> */}
+                <button type="button" className={ prevVideo?._id ? 'button-active' : 'button-inactive' } id="playPrevVideo" onClick={playPrev}><KeyboardDoubleArrowLeftIcon /> </button>
+                {isVideoPlaying ? <></> : <button type="button"  id="playVideo" onClick={playPouse}><PlayArrowIcon /> </button>}
+                <button type="button" className={ nextVideo?._id ? 'button-active' : 'button-inactive' } id="playNextVideo" onClick={playNext}><KeyboardDoubleArrowRightIcon /> </button>
+                </div>
             </div>
             <div id='video-timeline-container' className='video-timeline-container'>
                 <div data-testid="video-timeline" className="inner" id='video-timeline' >

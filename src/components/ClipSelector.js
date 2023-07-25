@@ -74,7 +74,7 @@ function ClipSelector() {
 
   const playTimeLine = (timestamp) => {
     const video = document.getElementById('video');
-    const [start, end] = timestamp.split(',');
+    const [start, end] = timestamp?.split(',');
     video.currentTime = start;
     video.play();
     dispatch(actions.setisVideoPlaying(1))

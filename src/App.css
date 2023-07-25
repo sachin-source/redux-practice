@@ -216,16 +216,33 @@ video::-webkit-slider-thumb {
 }
 
 #playVideo {
-  position:absolute;
-  top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  -webkit-transform: translate(-50%, -50%);
+}
+
+#playNextVideo {
+  right: 5px;
+}
+
+#playPrevVideo {
+  left: 5px;
+}
+
+.video-buttons {
+  position: absolute;
+  top: calc(50% - 17.5px);
+  width: 100%;
+  height: 35px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 10px;
+}
+
+.video-buttons button {
   border-radius: 50px;
   padding: 6px;
   border: none;
-  background-color: #56bdbc;
-  color: white;
+  /* background-color: #56bdbc;
+  color: white; */
 }
 
 #video-timeline .active {
@@ -243,7 +260,7 @@ video::-webkit-slider-thumb {
   flex-direction: column;
   gap: 10px;
 
-  max-height: 150px;
+  max-height: 220px;
   overflow-x: auto;
 }
 
@@ -319,3 +336,16 @@ video::-webkit-slider-thumb {
 .react-multi-carousel-track {
   z-index: 2;
 }
+
+.video-buttons .button-active, #playVideo {
+  background-color: #56bdbc;
+  color: white;
+  cursor: pointer;
+}
+
+.video-buttons .button-inactive {
+  background-color: transparent;
+  color: transparent;
+  cursor: default;
+}
+

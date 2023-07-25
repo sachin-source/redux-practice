@@ -1,16 +1,15 @@
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import './CarouselNew.css';
-import { useSelector } from "react-redux";
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { useDispatch, useSelector } from "react-redux";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import { actions } from "../store";
 
 const ButtonGroup = ({ next, previous, goToSlide, ...rest }) => {
   const { carouselState: { currentSlide, totalItems } } = rest;
   const isLeftDisabled = currentSlide === 0
   const isRightDisabled = currentSlide+2 >= totalItems;
-  console.log({ rest, isLeftDisabled, isRightDisabled })
   return (
     <div className="carousel-button-group"  style={{display : 'flex', width : '100%', height : '100%', alignItems : 'center', justifyContent : !(isLeftDisabled || isRightDisabled) ? 'space-between' : ( isLeftDisabled ? 'right' : 'left' ) }} >
       { !isLeftDisabled ? <KeyboardArrowLeftIcon className="nav-buttons left-button" onClick={() => previous()} /> : <></> }
@@ -21,28 +20,6 @@ const ButtonGroup = ({ next, previous, goToSlide, ...rest }) => {
     </div>
   );
 };
-
-function CustomRightArrow({ onClick }) {
-  function handleClick() {
-    // do whatever you want on the right button click
-    console.log('Right button clicked, go to next slide');
-    // ... and don't forget to call onClick to slide
-    onClick();
-  }
-
-  return (
-    <>
-    {/* <KeyboardArrowRightIcon />
-    <button
-      onClick={handleClick}
-      aria-label="Go to next slide"
-      className="react-multiple-carousel__arrow react-multiple-carousel__arrow--right"
-    />
-    <NavigateNextIcon  onClick={handleClick} /> */}
-    <button onClick={handleClick}>sdf</button>
-    </>
-  );
-}
 
 const responsive = {
   desktop: {
@@ -62,8 +39,19 @@ const responsive = {
   }
 };
 
-function CarouselContainer({label, labelId, src, playTimeLine, index}) {
+function CarouselContainer({ labelId, src, playTimeLine, index}) {
   const clips = useSelector((state) => state.clips);
+  const currentLabelledClips = clips.filter(c => c.labelId == labelId);
+  
+  const dispatch = useDispatch()
+  
+  const setActiveVideos = (i) => {
+    playTimeLine(currentLabelledClips[i].timestamp);
+    dispatch(actions.setActiveLabelVideos(currentLabelledClips));
+    dispatch(actions.setNextVideo(currentLabelledClips[i+1] || null));
+    dispatch(actions.setPrevVideo(currentLabelledClips[i-1] || null));
+    dispatch(actions.setCurrentVideo(currentLabelledClips[i] || null));
+  }
 
   return <div data-testid={"carousel-" + index} className="carousel-container" >
         <Carousel
@@ -86,16 +74,18 @@ function CarouselContainer({label, labelId, src, playTimeLine, index}) {
       // renderButtonGroupOutside={true}
       // partialVisible={true}
     >
-      { clips.length ? clips.filter(c => c.labelId == labelId).map((item, i) => <Item key={i} i={i} item={item} src={src} playTimeLine={playTimeLine} /> ) : ( <div className="clip-placeholder" >No clips available</div> ) }
+      { currentLabelledClips?.length ? currentLabelledClips.map((item, i) => <Item key={i} i={i} setActiveVideos={setActiveVideos} item={item} src={src} /> ) : ( <div className="clip-placeholder" >No clips available</div> ) }
     </Carousel>
   </div>
 }
 
-function Item({ i, item, src, playTimeLine })
+function Item({ i, item, src, setActiveVideos })
 {  
+  
+  const currentVideo = useSelector((state) => state.currentVideo);
   return (
     <div className="video-clip-container" id={`video-${i}`} >
-      <video  controls={false} height='100%' width='100%' onClick={() => playTimeLine(item.timestamp)} >
+      <video style={{ border : currentVideo?._id == item?._id ? '1px solid black' : 'none' }} controls={false} height='100%' width='100%' onClick={() => setActiveVideos(i)} >
         <source src={src + `#t=${item.timestamp}` } type="video/mp4" />
       </video>
       <div className="video-clip-container-checkbox" > <input type="checkbox" style={{position : 'absolute'}} id="car" name="car" /> </div>
