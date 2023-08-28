@@ -55,6 +55,7 @@ video::-webkit-slider-thumb {
   padding: 10px;
   margin: 10px 10px 1px 0px;
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .video-container {

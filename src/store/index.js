@@ -1,7 +1,7 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 const assetsSlice = createSlice({
     name : 'assets', 
-    initialState : { categories : [], products : [], videos : [], allLabels : [], allClips : [], labels : [], clips : [], activeLabels : [], activeClips : [], activeLabelNames : [], activeLabelIds : [], isloadedClips:false, isVideoPlaying : 0, expanded : '', nextVideo : {}, prevVideo : {}, activeLabelVideos : [], currentVideo : {} },
+    initialState : { categories : [], products : [], videos : [], allLabels : [], allClips : [], labels : [], clips : [], activeLabels : [], activeClips : [], activeLabelNames : [], activeLabelIds : [], isloadedClips:false, isVideoPlaying : 0, expanded : '', nextVideo : {}, prevVideo : {}, activeLabelVideos : [], currentVideo : {}, setActiveVideoFilter : {} },
     reducers : {
         addCategories (state, action) {
             state.categories = [...action.payload]
@@ -58,6 +58,9 @@ const assetsSlice = createSlice({
         },
         setCurrentVideo(state, action){
             state.currentVideo = action.payload
+        },
+        setActiveVideoFilter(state, action) {
+            state.activeVideoFilter = action.payload;
         }
     }
 })

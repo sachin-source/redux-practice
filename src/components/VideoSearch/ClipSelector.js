@@ -11,7 +11,7 @@ import MuiAccordionSummary from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import { useSelector, useDispatch } from 'react-redux';
-import { actions } from '../store';
+import { actions } from '../../store';
 // import VideoPlayer from './components/VideoPlayer';
 
 const SERVER_URL = "http://localhost:3006/"// "https://ixiaz4tu69.execute-api.ap-south-1.amazonaws.com/dev/" //  "http://localhost:3006/";
@@ -29,6 +29,7 @@ function ClipSelector() {
   const allLabels = useSelector((state) => state.allLabels);
   const allClips = useSelector((state) => state.allClips);
   const expanded = useSelector((state) => state.expanded);
+  const activeVideoFilter = useSelector((state) => state.activeVideoFilter);
 
   const dispatch = useDispatch()
 
@@ -110,7 +111,7 @@ function ClipSelector() {
                           allLabels?.filter(l => l.category == f.trim().toLowerCase()).length ? allLabels.filter(l => l.category == f.trim().toLowerCase()).map((l, j) => (
                             <div className='carousel-container' >
                               <span className='carousel-head' id={l._id} >{l.label}</span>
-                              <CarouselContainer index={i + "-" + j} clips={allClips.filter(c => c.labelId == l._id.toString())} label={l.label} labelId={l._id.toString()} src={"videoplayback.mp4"} playTimeLine={playTimeLine} />
+                              <CarouselContainer index={i + "-" + j} clips={allClips.filter(c => c.labelId == l._id.toString())} label={l.label} labelId={l._id.toString()} src={activeVideoFilter?.src} playTimeLine={playTimeLine} />
                             </div>
                           )) : (
                             <div data-testid={"accordian-body-" + i} className='clip-placeholder' >No labels and/or clips available</div>

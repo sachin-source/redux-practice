@@ -4,7 +4,7 @@ import './CarouselNew.css';
 import { useDispatch, useSelector } from "react-redux";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import { actions } from "../store";
+import { actions } from "../../store";
 
 const ButtonGroup = ({ next, previous, goToSlide, ...rest }) => {
   const { carouselState: { currentSlide, totalItems } } = rest;
@@ -46,6 +46,7 @@ function CarouselContainer({ labelId, src, playTimeLine, index}) {
   const dispatch = useDispatch()
   
   const setActiveVideos = (i) => {
+    // alert(src)
     playTimeLine(currentLabelledClips[i].timestamp);
     dispatch(actions.setActiveLabelVideos(currentLabelledClips));
     dispatch(actions.setNextVideo(currentLabelledClips[i+1] || null));
