@@ -6,21 +6,21 @@ import { useSelector, useDispatch } from 'react-redux';
 import { actions } from '../../store';
 
 function VideoPlayer({ SERVER_URL }) {
-    const getInitialSelectionValues = () => {
-        fetch(`${SERVER_URL}category`).then(response => response.json()).then(({ err, categories }) => {
-          dispatch(actions.addCategories(categories))
-          fetch(`${SERVER_URL}product`).then(response => response.json()).then(({ err, products }) => {
-            dispatch(actions.addProducts(products))
-            fetch(`${SERVER_URL}episode`).then(response => response.json()).then(({ err, episodes }) => {
-              dispatch(actions.addEpisodes(episodes))
-              fetch(`${SERVER_URL}video`).then(response => response.json()).then(({ err, videos }) => {
-                dispatch(actions.addVideos(videos))
-              });
-            });
-          });
-        });
-      }
-      useEffect(getInitialSelectionValues, [])
+    // const getInitialSelectionValues = () => {
+    //     fetch(`${SERVER_URL}category`).then(response => response.json()).then(({ err, categories }) => {
+    //       dispatch(actions.addCategories(categories))
+    //       fetch(`${SERVER_URL}product`).then(response => response.json()).then(({ err, products }) => {
+    //         dispatch(actions.addProducts(products))
+    //         fetch(`${SERVER_URL}episode`).then(response => response.json()).then(({ err, episodes }) => {
+    //           dispatch(actions.addEpisodes(episodes))
+    //           fetch(`${SERVER_URL}video`).then(response => response.json()).then(({ err, videos }) => {
+    //             dispatch(actions.addVideos(videos))
+    //           });
+    //         });
+    //       });
+    //     });
+    //   }
+    //   useEffect(getInitialSelectionValues, [])
 
     const filters = ['VPP', 'Object', 'Activity', 'Emotion', 'Celebrity', 'Scenes']
 
