@@ -1,4 +1,5 @@
 import { Paper } from '@mui/material'
+import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded';
 
 const ExportedClips = () => {
     return (
@@ -6,7 +7,9 @@ const ExportedClips = () => {
             <div className="container" >
             <div className="clips-container">
             <Paper className="video-clip-paper" >
-                <div className="title" ><span>TV Shows</span> <span>ion</span> </div>
+                <div className="title" ><span>TV Shows</span> <span>
+                    <ViewListRoundedIcon />
+                    </span> </div>
                 <div className="row" >
                     <div className="clip" >
                         <img src="https://bsmedia.business-standard.com/_media/bs/img/article/2020-01/31/full/1580411311-5858.jpg" />
@@ -99,7 +102,9 @@ const ExportedClips = () => {
                 </div>
             </Paper>
             <Paper className="video-clip-paper" >
-                <div className="title" ><span>TV Shows</span> <span>ion</span> </div>
+                <div className="title" ><span>TV Shows</span> <span>
+                    <ViewListRoundedIcon />
+                    </span> </div>
                 <div className="row" >
                     <div className="clip" >
                         <img src="https://bsmedia.business-standard.com/_media/bs/img/article/2020-01/31/full/1580411311-5858.jpg" />
