@@ -16,7 +16,7 @@ const SignUp = () => {
                         <input type="checkbox" id="checkbox" />
                         <label>Remember Me</label>
                     </div>
-                    <Button variant="contained" style={{ backgroundColor: '#000' }} >Sign Up</Button>
+                    <Button variant="contained"  style={{ backgroundColor: '#000' }} >Sign Up</Button>
                 </Paper>
             </div>
         </>

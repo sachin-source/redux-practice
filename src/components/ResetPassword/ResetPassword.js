@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from 'react-router-dom';
 import Logo from '../../assets/images/logoTopC.jpg';
 import CustomTextfield from "../CommonComponents/CustomTextField";
+import { Link } from "react-router-dom";
 // import { setShowLoader } from '../redux/loaderSlice';
 
 const Media = styled("img")({
@@ -16,66 +17,34 @@ const Media = styled("img")({
 });
 
 
-const Login = ({ setIsAuthenticated, setUserType, setUserId }) => {
+const ResetPassword = ({ setIsAuthenticated, setUserType, setUserId }) => {
     const dispatch = useDispatch()
     const navigate = useNavigate();
     const location = useLocation();
-    const selectedCircle = location.state?.selectedCircle || null;
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-    console.log(selectedCircle)
-
-    const [userName, SetUserName] = useState("");
-    const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-
-    const handleToggleShowPassword = () => {
-        setShowPassword((prevShowPassword) => !prevShowPassword);
+    const handleToggleShowPassword = (event) => {
+        setShowNewPassword((prevShowPassword) => !prevShowPassword);
     };
-
-    const handleUserNameChange = (event) => {
-        SetUserName(event.target.value);
+    const handleToggleShowConfirmPassword = (event) => {
+        setShowConfirmPassword((prevShowPassword) => !prevShowPassword);
     };
-
-    const handlePasswordChange = (event) => {
-        setPassword(event.target.value);
+    const handleNewPasswordChange = (event) => {
+        setNewPassword(event.target.value);
+    };
+    const handleConfirmPasswordChange = (event) => {
+        setConfirmPassword(event.target.value);
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
-        // dispatch(setShowLoader(true));
-
-        // try {
-        //     const response = await axios.get('http://localhost:3000/User');
-        //     const userData = response.data;
-        //     const name = userName;
-        //     const key = password;
-        //     // Perform login check by filtering the userData array
-        //     const user = userData.find((user) => user.userName === name && user.password === key);
-
-        //     if (user) {
-        //         setIsAuthenticated((prev) => !prev);
-        //         setUserType(user.userType);
-        //         setUserId(user.id);
-        //         dispatch(addUserId(user.id));
-                // dispatch(setShowLoader(false));
-        //     } else {
-        //         alert('Invalid UserName or Password details');
-                // dispatch(setShowLoader(false));
-        //     }
-        // } catch (error) {
-        //     console.error(error);
-        //     alert('An error occurred during login');
-            // dispatch(setShowLoader(false));
-        // }
+        console.log(newPassword,confirmPassword) 
     };
-
-
-    const handleNavigate = () => {
-        navigate('/SignUp');
-    };
-    const forgotPassword = () => {
-        navigate('/ResetPassword');
+    const backButton = () => {
+        window.history.back()
     };
 
 
@@ -85,14 +54,6 @@ const Login = ({ setIsAuthenticated, setUserType, setUserId }) => {
             <Grid
                 variant='Login' xs={12}
             >
-                {/* <AppBar variant="A2" position="static" color="transparent" elevation={0}>
-                    <Toolbar variant="dense" >
-                        <Typography >
-                            <Media src={Logo} alt="" />
-                        </Typography>
-
-                    </Toolbar>
-                </AppBar> */}
                 <div className="centered">
                             <img className="login-page-logo" src={Logo} alt="" />
                 </div>
@@ -113,6 +74,7 @@ const Login = ({ setIsAuthenticated, setUserType, setUserId }) => {
                         container
                         spacing={2}
                     >
+                        
                         <Grid
                             item
                             xs={12}
@@ -124,7 +86,7 @@ const Login = ({ setIsAuthenticated, setUserType, setUserId }) => {
                                 fontWeight={"bold"}
                                 fontFamily={"DM Sans"}
                             >
-                                {"Sign-In"}
+                                {"Reset Password"}
                             </Typography>
                             {/* <Typography
                                 variant={"subtitle2"}
@@ -136,12 +98,6 @@ const Login = ({ setIsAuthenticated, setUserType, setUserId }) => {
                             </Typography> */}
                         </Grid>
                         <Grid
-                            item
-                            xs={12}
-                            container
-                            spacing={1}
-                        >
-                            <Grid
                                 item
                                 xs={12}
                             >
@@ -150,24 +106,36 @@ const Login = ({ setIsAuthenticated, setUserType, setUserId }) => {
                                     fontWeight={"bold"}
                                     color={"#344357"}
                                 >
-                                    {"User Name"}
+                                    {"New Password"}
                                 </Typography>
-                                
                             </Grid>
-                            <Grid
+                        <Grid
                                 item
                                 xs={12}
                             >
                                 <CustomTextfield
                                     size={"small"}
-                                    id={"user-email-input"}
-                                    placeholder={"Enter user name"}
+                                    id={"user-password-input"}
+                                    placeholder={"Enter New Password"}
                                     fullWidth
                                     variant={"outlined"}
-                                    onChange={handleUserNameChange}
+                                    type={showNewPassword ? "text" : "password"}
+                                    onChange={handleNewPasswordChange}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end" >
+                                                <IconButton  onClick={handleToggleShowPassword}>
+                                                    {showNewPassword ? (
+                                                        <VisibilityOff fontSize={"small"} sx={{ height: "100%" }} />
+                                                    ) : (
+                                                        <Visibility fontSize={"small"} sx={{ height: "100%" }} />
+                                                    )}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
                                 />
                             </Grid>
-                        </Grid>
                         <Grid
                             item
                             xs={12}
@@ -175,36 +143,16 @@ const Login = ({ setIsAuthenticated, setUserType, setUserId }) => {
                             spacing={1}
                         >
                             <Grid
-                                container
-                                sx={{
-                                    flexGrow: "1"
-                                }}
+                                item
                                 xs={12}
                             >
-                                <Grid xs={7}>
                                 <Typography
                                     variant={"subtitle1"}
                                     fontWeight={"bold"}
                                     color={"#344357"}
                                 >
-                                    {"Password"}
+                                    {"Confirm New Password"}
                                 </Typography>
-                                </Grid>
-                               <Grid xs={5}>
-                               <Typography
-                                    variant={"subtitle1"}
-                                    fontWeight={"bold"}
-                                    color={"#344357"}
-                                    textAlign={"right"}
-                                    style={{
-                                        cursor: "pointer",
-                                    }}
-                                    onClick={forgotPassword}
-                                >
-                                    {"Forgot Password?"}
-                                </Typography>
-                               </Grid>
-                               
                             </Grid>
                             <Grid
                                 item
@@ -213,16 +161,16 @@ const Login = ({ setIsAuthenticated, setUserType, setUserId }) => {
                                 <CustomTextfield
                                     size={"small"}
                                     id={"user-password-input"}
-                                    placeholder={"Enter password"}
+                                    placeholder={"Confirm New Password"}
                                     fullWidth
                                     variant={"outlined"}
-                                    type={showPassword ? "text" : "password"}
-                                    onChange={handlePasswordChange}
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    onChange={handleConfirmPasswordChange}
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end">
-                                                <IconButton onClick={handleToggleShowPassword}>
-                                                    {showPassword ? (
+                                                <IconButton  onClick={handleToggleShowConfirmPassword}>
+                                                    {showConfirmPassword ? (
                                                         <VisibilityOff fontSize={"small"} sx={{ height: "100%" }} />
                                                     ) : (
                                                         <Visibility fontSize={"small"} sx={{ height: "100%" }} />
@@ -243,43 +191,26 @@ const Login = ({ setIsAuthenticated, setUserType, setUserId }) => {
                                 fullWidth
                                 type="submit"
                                 variant="B6"
-                                color="primary"
-                                size="large"
                                 sx={{
                                     color: "white",
                                     background: "black",
                                     "&:hover": {backgroundColor: "#212120" }
                                 }}
-                                onClick={handleSubmit}
-                            >
-                                Sign in
-                            </Button>
-
-                            <Button
-                                fullWidth
-                                type="submit"
-                                variant="B7"
-                                color="primary"
                                 size="large"
                                 onClick={handleSubmit}
                             >
-                                <FcGoogle fontSize='large' style={{ background: 'white' }} />&nbsp;&nbsp; Login With Google
+                                Submit
                             </Button>
 
-
-                        </Grid>
-                        <Grid
-                            item
-                            xs={12}
-                        >
-                            <Typography
-                                variant={"subtitle2"}
-                                textAlign={"center"}
-                                color={"#526484"}
-                            >
-                                {"Don't have an account?"}
-                                <span style={{ fontWeight: "bold", color: "black", cursor: "pointer" }} onClick={handleNavigate}>{" Sign up"}</span>
-                            </Typography>
+                           <Typography 
+                            className="centered"
+                            sx={{
+                                padding: "10px",
+                                cursor: "pointer",
+                            }}
+                            onClick={backButton}
+                            >Back
+                           </Typography>
                         </Grid>
                     </Grid>
                 </Paper>
@@ -289,4 +220,4 @@ const Login = ({ setIsAuthenticated, setUserType, setUserId }) => {
     );
 };
 
-export default Login;
+export default ResetPassword;
