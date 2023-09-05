@@ -1,0 +1,64 @@
+body {
+    background-color: white;
+}
+input:focus-visible{
+    outline: none;
+}
+select:focus-visible{
+    outline: none;
+}
+.main-allvideos{
+    background-color: white;
+    height: 100% auto;
+    max-width: 95%;
+    text-align: center;
+}
+.search-input-div{
+    display: flex;
+    background-color: white;
+    margin: 10px;
+    padding: 2px;
+    /* width: 100%; */
+    border-bottom: 2px solid blueviolet ;
+}
+.search-input-div span{
+    margin: 8px;
+    font-size: 20px;
+}
+.search-input{
+    padding: 5px;
+    width: 100%;
+    border: none;
+    font-size: 20px;
+}
+.search-input:focus-visible{
+    outline: none;
+}
+.filters-div{
+    display: flex;
+    margin-top: 10px;
+    justify-content: start;
+    width: 100%;
+}
+.select-div {
+    padding: 10px !important;
+    margin: 10px;
+    width: 200px;
+}
+.view-div{
+    text-align: right;
+    margin-top: 10px;
+}
+.view-div button {
+    padding: 5px;
+    text-align: center;
+    margin: 5px;
+    width: 80px;
+}
+.videos-div iframe {
+    border: none;
+}
+
+.videos-div {
+    max-width: 94%;
+}

@@ -30,6 +30,12 @@ header {
   color: black !important;
 }
 
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .video-section-container {
   /* width: 60vw; */
 }
@@ -393,7 +399,7 @@ header {
 
 .clip {
   max-width: 22%;
-  border: 1px solid rgba(0, 0, 0, 0.44);
+  border: 2px solid #80808030;
   border-radius: 8px;
 }
 
@@ -441,4 +447,37 @@ header {
 
 .video-clip-paper {
   padding-bottom: 20px;
+}
+
+.login-page-logo {
+  max-width: 30rem;
+  margin-top: 20px;
+  max-height: 50px;
+}
+
+.left {
+  display: flex;
+  align-items: flex-start;
+}
+
+.col {
+  flex-direction: column;
+}
+
+.half {
+  max-width: 50%;
+}
+
+.signUp {
+  margin: 40px;
+  gap: 20px;
+  padding: 20px;
+}
+
+.white {
+  background-color: #fff;
+}
+
+#checkbox {
+  margin-right: 10px;
 }

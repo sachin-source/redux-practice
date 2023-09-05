@@ -1,0 +1,20 @@
+[
+    {
+        "filterName": "Country",
+        "type": "dropdown",
+        "options": ["India","Rassia","America"]
+    },
+    {
+        "filterName": "Project",
+        "type": "dropdown",
+        "options": ["Project1","Project2","Project3"]
+    },
+    {
+        "filterName": "Episode",
+        "type": "text"
+    },
+    {
+        "filterName": "Keyword",
+        "type": "text"
+    }
+]

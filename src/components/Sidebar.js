@@ -146,7 +146,7 @@ export default function SideBar({ routes }) {
                 // const response = await axios.get(`http://localhost:3000/User/${userId}`);
                 // const userData = response.data;
                 // setUserData(userData);
-                setUserData({ name : 'sachin', userType : 'admin', imgUrl : '' })
+                // setUserData({ name : 'sachin', userType : 'admin', imgUrl : '' })
             } catch (error) {
                 console.error(error);
             }
